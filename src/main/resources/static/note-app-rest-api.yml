@@ -1,0 +1,281 @@
+openapi: 3.0.1
+info:
+  description: Note App API
+  version: '1.0'
+  title: Note App API
+  contact:
+    name: Note App
+    email: olha.zakharchuk.vic@gmail.com
+
+tags:
+  - name: Note
+    description: Note-related endpoints
+  - name: Customer
+    description: Customer-related endpoints
+
+paths:
+  /api/v1/notes/{noteId}:
+    get:
+      tags:
+        - Note
+      summary: Get note by ID
+      operationId: getNote
+      parameters:
+        - $ref: "#/components/parameters/noteId"
+      responses:
+        '200':
+          $ref: "#/components/responses/200_NoteTOResponse"
+        '404':
+          $ref: "#/components/responses/notFound"
+        default:
+          $ref: "#/components/responses/genericError"
+    put:
+      tags:
+        - Note
+      summary: Update note by ID
+      operationId: updateNote
+      parameters:
+        - $ref: "#/components/parameters/noteId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createUpdateNoteRequestTO"
+        required: true
+      responses:
+        '204':
+          description: Updated
+        '404':
+          $ref: "#/components/responses/notFound"
+        default:
+          $ref: "#/components/responses/genericError"
+    delete:
+      tags:
+        - Note
+      summary: Delete note by ID
+      operationId: deleteNote
+      parameters:
+        - $ref: "#/components/parameters/noteId"
+      responses:
+        '200':
+          description: Deleted
+        '404':
+          $ref: "#/components/responses/notFound"
+        default:
+          $ref: "#/components/responses/genericError"
+
+  /api/v1/notes:
+    get:
+      tags:
+        - Note
+      summary: Get all notes
+      operationId: getAllNotes
+      responses:
+        '200':
+          $ref: "#/components/responses/200_NoteTOListResponse"
+        default:
+          $ref: "#/components/responses/genericError"
+    post:
+      tags:
+        - Note
+      summary: Create a new note
+      operationId: createNote
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createUpdateNoteRequestTO"
+        required: true
+      responses:
+        '201':
+          $ref: "#/components/responses/201_NoteIdResponse"
+        default:
+          $ref: "#/components/responses/genericError"
+
+  /api/v1/like/notes/{noteId}:
+    patch:
+      tags:
+        - Note
+      summary: Update like for note by ID
+      operationId: updateLike
+      parameters:
+        - $ref: "#/components/parameters/noteId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateLikeRequestTO"
+        required: true
+      responses:
+        '204':
+          description: Updated
+        '403':
+          $ref: "#/components/responses/unauthorized"
+        '404':
+          $ref: "#/components/responses/notFound"
+        default:
+          $ref: "#/components/responses/genericError"
+
+  /api/v1/auth/register:
+    post:
+      tags:
+        - Customer
+      summary: Register a new user
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/customerTO"
+        required: true
+      responses:
+        '201':
+          $ref: "#/components/responses/TokenResponse"
+        '409':
+          $ref: "#/components/responses/conflict"
+        default:
+          $ref: "#/components/responses/genericError"
+
+  /api/v1/auth/authenticate:
+    post:
+      tags:
+        - Customer
+      summary: Authenticate
+      operationId: authenticate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/customerTO"
+        required: true
+      responses:
+        '200':
+          $ref: "#/components/responses/TokenResponse"
+        '404':
+          $ref: "#/components/responses/notFound"
+        default:
+          $ref: "#/components/responses/genericError"
+
+components:
+  parameters:
+    noteId:
+      name: noteId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+
+  schemas:
+    errorTO:
+      description: Error details
+      type: object
+      properties:
+        error_code:
+          type: string
+          example: TECHNICAL_ERROR
+        message:
+          type: string
+          example: Technical error
+
+    createUpdateNoteRequestTO:
+      description: Create or update note TO object
+      type: object
+      properties:
+        value:
+          type: string
+          maxLength: 500
+        like:
+          type: boolean
+      required:
+        - value
+        - like
+
+    updateLikeRequestTO:
+      description: Update like request object
+      type: object
+      properties:
+        like:
+          type: boolean
+      required:
+        - like
+
+    noteTO:
+      description: Note TO oblect
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        value:
+          type: string
+        likeNumber:
+          type: integer
+
+    customerTO:
+      description: Customer TO object
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+  responses:
+    201_NoteIdResponse:
+      description: Response with note id
+      content:
+        application/json:
+          schema:
+            type: integer
+            format: int64
+
+    200_NoteTOResponse:
+      description: Response with note TO object
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/noteTO"
+
+    200_NoteTOListResponse:
+      description: Response with notes TO object
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              "$ref": "#/components/schemas/noteTO"
+
+    TokenResponse:
+      description: Response with token
+      content:
+        application/json:
+          schema:
+            type: string
+
+    unauthorized:
+      description: Unauthorized
+
+    notFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/errorTO"
+
+    conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/errorTO"
+
+    genericError:
+      description: Generic error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/errorTO"

@@ -1,0 +1,19 @@
+version: "3.7"
+
+volumes:
+  note-app-postgres-data:
+
+services:
+  postgres:
+    image: "postgres:14.0"
+    volumes:
+      - note-app-postgres-data:/var/lib/pgsql/data
+    restart: on-failure
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=note
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    expose:
+      - 5432

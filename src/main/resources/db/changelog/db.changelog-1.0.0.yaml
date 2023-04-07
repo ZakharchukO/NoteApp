@@ -1,0 +1,93 @@
+databaseChangeLog:
+  - changeSet:
+      author: olha.zakharchuk.vic@gmail.com
+      id: 07-04-2023-01
+      comment: Create sequence for the table note
+      changes:
+        - createSequence:
+            sequenceName: note_id_seq
+            incrementBy: 50
+
+  - changeSet:
+      author: olha.zakharchuk.vic@gmail.com
+      id: 07-04-2023-02
+      comment: Create table note
+      changes:
+        - createTable:
+            tableName: note
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: created_date
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_modified_date
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: varchar(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: like_number
+                  type: integer
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      author: olha.zakharchuk.vic@gmail.com
+      id: 07-04-2023-03
+      comment: Create sequence for the table customer
+      changes:
+        - createSequence:
+            sequenceName: customer_id_seq
+            incrementBy: 50
+
+  - changeSet:
+      author: olha.zakharchuk.vic@gmail.com
+      id: 07-04-2023-04
+      comment: Create table customer
+      changes:
+        - createTable:
+            tableName: customer
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: created_date
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_modified_date
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: unique_customer
+              - column:
+                  name: password
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: varchar(10)
+                  constraints:
+                    nullable: false

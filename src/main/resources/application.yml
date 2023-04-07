@@ -1,0 +1,33 @@
+server:
+  port: 9999
+
+app:
+  database:
+    schema: public
+
+spring:
+  datasource:
+    hikari:
+      connection-timeout: 60000
+      maximum-pool-size: 4
+      schema: ${app.database.schema}
+    url: jdbc:postgresql://localhost:5432/note
+    username: user
+    password: password
+  jpa:
+    open-in-view: false
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        default_schema: ${app.database.schema}
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_size: 10
+  liquibase:
+    change-log: classpath:db/liquibase-changelog.yaml
+    enabled: true
+    default-schema: ${app.database.schema}
+    liquibase-schema: ${app.database.schema}
